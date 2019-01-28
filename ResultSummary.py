@@ -14,16 +14,15 @@ class ResultSummary(object):
         if not os.path.exists(self.result_folder):
             os.makedirs(self.result_folder)
 
-        if not os.path.exists(self.img_folder):
-            os.makedirs(self.img_folder)
-
-    def add_result(self, img_name, fields):
+    def add_result(self, img_name, fields, subfolder=''):
         json_dict = {img_name: fields}
         for field_name, val in fields.items():
             if isinstance(val, PIL.Image.Image):
-                img_path = self.img_folder + '/' + img_name
-                val.save(img_path)
-                json_dict[img_name][field_name] = './imgs/' + img_name
+                img_path = self.img_folder + '/' + subfolder
+                if not os.path.exists(img_path):
+                    os.makedirs(img_path)
+                val.save(img_path + '/' + img_name)
+                json_dict[img_name][field_name] = './imgs/' + subfolder + '/' + img_name
             if field_name not in self.field_names:
                 self.field_names.append(field_name)
         json_output = json.dumps(json_dict)
